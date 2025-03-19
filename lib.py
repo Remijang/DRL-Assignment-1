@@ -23,9 +23,10 @@ class PyTorchPolicy:
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
-        probs = torch.softmax(self.policy[state], dim=0)[:4]
-        '''
-        if (state[0], state[1]) == self.station[state[3]]:
+        probs = torch.softmax(self.policy[state], dim=0)
+        x, y = state[0], state[1]
+
+        if (x, y) == self.station[state[3]]:
             if self.get_passenger == 0 and obs[-2] == True:
                 probs[4] += 10
             elif self.get_passenger == 1 and obs[-1] == True:
@@ -33,7 +34,13 @@ class PyTorchPolicy:
         else:
             probs[4] = 0.0
             probs[5] = 0.0
-        '''
+        
+        neighbor = [(x, y + 1), (x, y - 1), (x + 1, y), (x - 1, y)]
+
+        for i in range(4):
+            if neighbor[i] in self.station:
+                probs[i] /= 100
+
         action = torch.multinomial(probs, 1).item()
         
         self.update_state(state, obs, action)
