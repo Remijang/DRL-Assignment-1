@@ -22,7 +22,7 @@ class PyTorchPolicy:
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
-        probs = torch.softmax(self.policy[*state], dim=0)
+        probs = torch.softmax(self.policy[state], dim=0)
         '''
         if (state[0], state[1]) == self.station[state[3]]:
             if self.get_passenger == 0 and obs[-2] == True:
