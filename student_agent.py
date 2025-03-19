@@ -5,14 +5,14 @@ import random
 import gym
 from lib import PyTorchPolicy
 
-state_size = (5, 5, 2, 4, 2, 2, 2, 2)
+state_size = (10, 10, 2, 4, 2, 2, 2, 2)
 action_size = 6
 table = PyTorchPolicy(state_size, action_size)
 
 with open("policy_model", 'rb') as f:
     table.policy = pickle.load(f)
     
-table.reset_state()
+cnt = 0
 
 def get_action(obs):
     
@@ -21,6 +21,9 @@ def get_action(obs):
     # NOTE: Keep in mind that your Q-table may not cover all possible states in the testing environment.
     #       To prevent crashes, implement a fallback strategy for missing keys. 
     #       Otherwise, even if your agent performs well in training, it may fail during testing.
+    if cnt == 0:
+        table.reset_state(obs)
+        cnt += 1
 
     lis = list(obs)
     lis[0] %= 5
