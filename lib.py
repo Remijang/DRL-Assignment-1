@@ -16,9 +16,10 @@ class PyTorchPolicy:
         self.policy = torch.rand(*state_size, action_size)
         self.optimizer = optim.Adam([self.policy], lr=lr)
         # self.loss_fn = nn.CrossEntropyLoss()
-        self.station = [(0, 0), (0, 4), (4, 0), (4,4)]
+        # self.station = [(0, 0), (0, 4), (4, 0), (4,4)]
         self.get_passenger = 0
         self.target = 0
+        self.reset = 0
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
@@ -41,10 +42,16 @@ class PyTorchPolicy:
     def get_agent_state(self, obs):
         return (obs[0], obs[1], self.get_passenger, self.target, obs[-6], obs[-5], obs[-4], obs[-3])
 
-    def reset_state(self):
+    def reset_state(self, obs):
         self.get_passenger = 0
         self.target = 0
         self.cnt = 0
+        self.station = []
+        self.station.append((obs[2], obs[3]))
+        self.station.append((obs[4], obs[5]))
+        self.station.append((obs[6], obs[7]))
+        self.station.append((obs[8], obs[9]))
+        self.reset = 1
 
     def update_state(self, state, obs, action):
         if (state[0], state[1]) == self.station[self.target]:
