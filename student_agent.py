@@ -6,7 +6,7 @@ import gym
 from lib import PyTorchPolicy
 
 state_size = (5, 5, 2, 4, 2, 2, 2, 2)
-action_size = 4
+action_size = 6
 table = PyTorchPolicy(state_size, action_size)
 
 with open("policy_model", 'rb') as f:
