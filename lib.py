@@ -18,6 +18,7 @@ class PyTorchPolicy:
         # self.loss_fn = nn.CrossEntropyLoss()
         self.get_passenger = 0
         self.reset = 0
+        random.seed(10)
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
