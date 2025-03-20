@@ -16,33 +16,15 @@ class PyTorchPolicy:
         self.policy = torch.zeros(*state_size, action_size)
         self.optimizer = optim.Adam([self.policy], lr=lr)
         # self.loss_fn = nn.CrossEntropyLoss()
-        # self.station = [(0, 0), (0, 4), (4, 0), (4,4)]
         self.get_passenger = 0
-        self.target = 0
         self.reset = 0
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
         probs = torch.softmax(self.policy[state], dim=0)
-        '''
-        if (x, y) == self.station[state[3]]:
-            if self.get_passenger == 0 and obs[-2] == True:
-                probs[4] += 10
-            elif self.get_passenger == 1 and obs[-1] == True:
-                probs[5] += 10
-        else:
-            probs[4] = 0.0
-            probs[5] = 0.0
-        '''
-        neighbor = [obs[-5], obs[-6], obs[-4], obs[-3]]
-
-        for i in range(0, 4, 1):
-            if neighbor[i] == 1:
-                probs[i] = 0.0
-
         action = torch.multinomial(probs, 1).item()
 
-        if (state[0], state[1]) == self.station[state[3]]:
+        if (state[0], state[1]) in self.station:
             if self.get_passenger == 0 and obs[-2] == True:
                 action = 4
             elif self.get_passenger == 1 and obs[-1] == True:
@@ -52,12 +34,10 @@ class PyTorchPolicy:
         return action
 
     def get_agent_state(self, obs):
-        return (obs[0], obs[1], self.get_passenger, self.target, obs[-6], obs[-5], obs[-4], obs[-3])
+        return (obs[0], obs[1], self.get_passenger, obs[-6], obs[-5], obs[-4], obs[-3])
 
     def reset_state(self, obs):
         self.get_passenger = 0
-        self.target = 0
-        self.cnt = 0
         self.station = []
         self.station.append((obs[2], obs[3]))
         self.station.append((obs[4], obs[5]))
@@ -66,15 +46,6 @@ class PyTorchPolicy:
         self.reset = 1
 
     def update_state(self, state, obs, action):
-        if (state[0], state[1]) == self.station[self.target]:
+        if (state[0], state[1]) in self.station:
             if self.get_passenger == 0 and obs[-2] == True and action == 4:
                 self.get_passenger = 1
-                self.target = 0
-            else:
-                self.target = (self.target + 1) % 4
-            self.cnt = self.cnt + 1
-        
-        if self.get_passenger == 1 and action == 5:
-            self.get_passenger = 0
-            self.target = 0
-            self.cnt = 0
