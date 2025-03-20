@@ -17,7 +17,6 @@ class PyTorchPolicy:
         self.target = 0
         self.policy = torch.zeros(*(self.state_size), self.action_size)
         self.reset = 0
-        random.seed(48763)
 
     def get_action(self, obs):
         state = self.get_agent_state(obs)
