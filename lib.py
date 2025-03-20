@@ -22,6 +22,13 @@ class PyTorchPolicy:
     def get_action(self, obs):
         state = self.get_agent_state(obs)
         probs = torch.softmax(self.policy[state], dim=0)
+
+        neighbor = [obs[-5], obs[-6], obs[-4], obs[-3]]
+        
+        for i in range(0, 4, 1):
+            if neighbor[i] == 1:
+                probs[i] = 0.0
+
         action = torch.multinomial(probs, 1).item()
 
         if (state[0], state[1]) in self.station:
