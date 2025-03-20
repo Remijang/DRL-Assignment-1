@@ -13,7 +13,7 @@ class PyTorchPolicy:
     def __init__(self, state_size, action_size, lr=0.1):
         self.state_size = state_size
         self.action_size = action_size
-        self.policy = torch.rand(*state_size, action_size)
+        self.policy = torch.zeros(*state_size, action_size)
         self.optimizer = optim.Adam([self.policy], lr=lr)
         # self.loss_fn = nn.CrossEntropyLoss()
         # self.station = [(0, 0), (0, 4), (4, 0), (4,4)]
@@ -24,8 +24,7 @@ class PyTorchPolicy:
     def get_action(self, obs):
         state = self.get_agent_state(obs)
         probs = torch.softmax(self.policy[state], dim=0)
-        x, y = state[0], state[1]
-
+        '''
         if (x, y) == self.station[state[3]]:
             if self.get_passenger == 0 and obs[-2] == True:
                 probs[4] += 10
@@ -34,14 +33,20 @@ class PyTorchPolicy:
         else:
             probs[4] = 0.0
             probs[5] = 0.0
-        
-        neighbor = [(x, y + 1), (x, y - 1), (x + 1, y), (x - 1, y)]
+        '''
+        neighbor = [obs[-5], obs[-6], obs[-4], obs[-3]]
 
-        for i in range(4):
-            if neighbor[i] in self.station:
-                probs[i] /= 100
+        for i in range(0, 4, 1):
+            if neighbor[i] == 1:
+                probs[i] = 0.0
 
         action = torch.multinomial(probs, 1).item()
+
+        if (state[0], state[1]) == self.station[state[3]]:
+            if self.get_passenger == 0 and obs[-2] == True:
+                action = 4
+            elif self.get_passenger == 1 and obs[-1] == True:
+                action = 5
         
         self.update_state(state, obs, action)
         return action
