@@ -5,9 +5,7 @@ import random
 import gym
 from lib import PyTorchPolicy
 
-state_size = (10, 10, 2, 4, 2, 2, 2, 2)
-action_size = 4
-table = PyTorchPolicy(state_size, action_size)
+table = PyTorchPolicy()
 
 with open("policy_model", 'rb') as f:
     table.policy = pickle.load(f)
