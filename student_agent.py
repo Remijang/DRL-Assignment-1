@@ -3,12 +3,9 @@ import numpy as np
 import pickle
 import random
 import gym
-from lib import PyTorchPolicy
 
-table = PyTorchPolicy()
-
-with open("policy_model", 'rb') as f:
-    table.policy = pickle.load(f)
+with open("q_table", 'rb') as f:
+    q_table = pickle.load(f)
 
 def get_action(obs):
     
@@ -17,10 +14,9 @@ def get_action(obs):
     # NOTE: Keep in mind that your Q-table may not cover all possible states in the testing environment.
     #       To prevent crashes, implement a fallback strategy for missing keys. 
     #       Otherwise, even if your agent performs well in training, it may fail during testing.
-    if table.reset == 0:
-        table.reset_state(obs)
     
-    return table.get_action(obs)
+    state = (obs[-5], obs[-6], obs[-4], obs[-3])
+    return np.argmax(q_table[state])
 
     # return random.choice([0, 1, 2, 3, 4, 5]) # Choose a random action
     # You can submit this random agent to evaluate the performance of a purely random strategy.
